@@ -1,0 +1,4 @@
+simpy
+matplotlib
+ipykernel
+jupyter-book
