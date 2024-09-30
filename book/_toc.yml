@@ -4,4 +4,7 @@
 format: jb-book
 root: intro
 chapters:
+- file: basics
+- file: processes_interaction
+- file: post
 - file: bank

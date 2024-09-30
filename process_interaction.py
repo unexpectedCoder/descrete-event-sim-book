@@ -1,34 +1,66 @@
 import simpy as sim
 
 
-class Car(object):
+# На этот раз автомобиль представим как объект (класс)
+class Car:
+    # При инициализации передадим экземпляр среды, ...
     def __init__(self, env: sim.Environment):
         self.env = env
+        # а также инициализируем основной процесс этого класса
         self.action = env.process(self.run())
 
+    # Функция-генератор процесса класса
     def run(self):
         while True:
-            print(f'Start parking and charging at {self.env.now}')
+            print(f'{self.env.now}: Паркуется и заряжается')
             charge_duration = 5
+            # Блок try-except здесь позволяет "мягко" прервать
+            # ожидание события "зарядка завершена"
             try:
+                # Обратите внимание: внутри процесса run инициализирован
+                # новый процесс charge, причём оператор yield говорит,
+                # что мы будем ждать завершения этого процесса
                 yield self.env.process(self.charge(charge_duration))
             except sim.Interrupt:
-                print('Was interrupted. Hope, the battery is full enough ...')
+                # Если ожидание прервано, то выводится это сообщение
+                print(f'{self.env.now}: Зарядка прервана!')
 
-            print(f'Start driving at {self.env.now}')
+            print(f'{self.env.now}: Едет')
             trip_duration = 2
+            # Этот yield в блок try-except не обрамлён,
+            # поэтому если будет прервано ожидание этого события,
+            # то рухнет вся программа,
+            # т.к. никто не поймает исключение sim.Interrupt
             yield self.env.timeout(trip_duration)
 
+    # Процесс зарядки
     def charge(self, duration):
+        # Просто ожидание в течение заданного времени
         yield self.env.timeout(duration)
 
 
+# Отдельный от класса Car процесс,
+# моделирующий поведение водителя
 def driver(env, car):
+    # Водитель единожды ждёт 3 единицы времени, ...
     yield env.timeout(3)
+    # после чего прерывает процесс (зарядки) автомобиля
+    # путём проброса исключения типа sim.Interrupt
     car.action.interrupt()
+    # !!! ВАЖНО !!!
+    # Это учебный пример и мы точно знаем, что через 3 ед. времени
+    # после начала симуляции автомобиль заряжается.
+    # Если бы он ехал, то мы получили бы упавшую программу,
+    # т.к. в этом случае исключение sim.Interrupt не было бы
+    # перехвачено в блоке try-except
 
 
+# Создаём экземпляр среды
 env = sim.Environment()
+# Создаём экземпляр электромобиля,
+# при этом автоматически инициализируется его процесс run
 car = Car(env)
+# Инициализируем процесс водителя
 env.process(driver(env, car))
-env.run(until=20)
+# Запускаем моделирование
+env.run(until=15)

@@ -1,17 +1,31 @@
+# Импортирует SimPy
 import simpy as sim
 
-
+# Описываем моделируемый процесс:
+# аргумент env - это экземпляр среды моделирования -
+# сущность, отвечающая за всю работу с журналом событий
 def car(env: sim.Environment):
+    # Входим в бесконечный цикл событий
     while True:
-        print('Start parking at %d' % env.now)
+        print(f'{env.now}: Паркуется')
         parking_duration = 5
+        # Создаём событие "истечение заданного времени" (timeout)
+        # и ждём (yield) его наступления
         yield env.timeout(parking_duration)
+        # Событие наступило (конец парковки),
+        # выполняется дальнейший код, называемый callback
 
-        print('Start driving at %d' % env.now)
+        print(f'{env.now}: Едет')
         trip_duration = 2
+        # Ждём событие timeout
         yield env.timeout(trip_duration)
+        # Событие наступило (конец движения) -
+        # цикл начинается заново
 
-
+# Создаём экземпляр среды моделирования
 env = sim.Environment()
+# Инициализируем процесс "жизни" автомобиля
 env.process(car(env))
-env.run(20)
+# Запускаем основной цикл моделирования
+# до заданной величины модельного времени
+env.run(until=20)
