@@ -1,0 +1,770 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Моделирование почтового отделения &#8212; Discrete-Event Simulation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'post';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Обслуживание клиентов банка" href="bank.html" />
+    <link rel="prev" title="Взаимодействие между процессами" href="processes_interaction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Discrete-Event Simulation - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Discrete-Event Simulation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Дискретно-событийное моделирование в Python
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Основы основ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processes_interaction.html">Взаимодействие между процессами</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Моделирование почтового отделения</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bank.html">Обслуживание клиентов банка</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/unexpectedCoder/descrete-event-sim-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/unexpectedCoder/descrete-event-sim-book/issues/new?title=Issue%20on%20page%20%2Fpost.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/post.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Моделирование почтового отделения</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Программная реализация</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>Моделирование почтового отделения<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<p>На примере простой задачи моделирования работы почтового (к примеру) отделения с несколькими окнами обслуживания клиентов разберёмся в работе с разделяемыми ресурсами в SimPy.
+Саму задачу сформулируем следующим образом.</p>
+<p>Имеется почтового отделение с 3 окнами.
+Каждое окно имеет свой график работы: массив вида <code class="docutils literal notranslate"><span class="pre">[(ts_1,</span> <span class="pre">te_1),</span> <span class="pre">(ts_2,</span> <span class="pre">te_2),</span> <span class="pre">...]</span></code>, где <code class="docutils literal notranslate"><span class="pre">ts_i</span></code> и <code class="docutils literal notranslate"><span class="pre">te_i</span></code> — глобальное время начала и конца работы окна в <code class="docutils literal notranslate"><span class="pre">i</span></code>-ой сессии соответственно.</p>
+<p>Клиенты приходят в случайные моменты времени, причём время между двумя клиентами распределено по экспоненциальному закону</p>
+<div class="math notranslate nohighlight">
+\[
+\Delta t_\text{a} \sim \frac{1}{\tau_\text{a}} \exp\left(-\frac{1}{\tau_\text{a}} \right)
+\]</div>
+<p>со средним временем (<code class="docutils literal notranslate"><span class="pre">mean_arrival</span></code>) между клиентами <span class="math notranslate nohighlight">\(\tau_\text{a}\)</span>.
+Время обслуживания (<code class="docutils literal notranslate"><span class="pre">duration</span></code>) каждого клиента случайно и распределено равномерно от 1 минуты до 10 минут (модельные часы будут отсчитывать время в часах).</p>
+<p>В качестве результата выведем все события, которые происходят в системе.</p>
+<section id="id2">
+<h2>Программная реализация<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>Полный код представлен ниже.
+Изучите его, обдумайте, проанализируйте, попытайтесь понять, прежде чем переходить к последующим пояснениям.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rand</span>
+<span class="kn">import</span> <span class="nn">simpy</span> <span class="k">as</span> <span class="nn">sim</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+
+<span class="c1"># Простая структура данных клиента</span>
+<span class="n">Client</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Client&quot;</span><span class="p">,</span> <span class="s2">&quot;cid arrival duration&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">clients_arriving</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">,</span>
+                     <span class="n">clients</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Store</span><span class="p">,</span>
+                     <span class="n">mean_arrival</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Процесс прихода клиентов.</span>
+
+<span class="sd">    * env: экземпляр среды SimPy</span>
+<span class="sd">    * clients: разделяемый ресурс - очередь клиентов</span>
+<span class="sd">    * mean_arrival: среднее время между приходами клиентов</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># cid - индивидуальный номер клиента</span>
+    <span class="n">cid</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Ожидаем нового клиента через случайное время</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">rand</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">mean_arrival</span><span class="p">))</span>
+        <span class="c1"># При наступлении события выполняем callback-код:</span>
+        <span class="c1"># создаём нового клиента</span>
+        <span class="n">new_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">rand</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Клиент #</span><span class="si">{</span><span class="n">new_client</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2"> ПРИШЁЛ&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Ожидаем возможности добавить клиента в очередь:</span>
+        <span class="c1"># в данном случае выполняется сразу,</span>
+        <span class="c1"># поскольку размер очереди не ограничен</span>
+        <span class="k">yield</span> <span class="n">clients</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">new_client</span><span class="p">)</span>
+        <span class="c1"># После выполняется callback-код</span>
+        <span class="n">cid</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">window</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">,</span>
+           <span class="n">timed_agenda</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+           <span class="n">clients</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Store</span><span class="p">,</span>
+           <span class="n">win_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Процесс работы окошка.</span>
+
+<span class="sd">    * env: экземпляр среды SimPy</span>
+<span class="sd">    * timed_agenda: расписание работы окна</span>
+<span class="sd">    * clients: очередь клиентов (разделяемый ресурс)</span>
+<span class="sd">    * win_num: номер окошка</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ts, te - время открытия и закрытия окошка</span>
+    <span class="k">for</span> <span class="n">ts</span><span class="p">,</span> <span class="n">te</span> <span class="ow">in</span> <span class="n">timed_agenda</span><span class="p">:</span>
+        <span class="c1"># Ожидание открытия окна</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">ts</span> <span class="o">-</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Окно #</span><span class="si">{</span><span class="n">win_num</span><span class="si">}</span><span class="s2"> ОТКРЫЛОСЬ&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Ожидание окончания процесса обслуживания</span>
+        <span class="c1"># клиентов (очереди clients).</span>
+        <span class="c1"># Процесс завершится, когда окошко закроется на перерыв</span>
+        <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">service</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">clients</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="n">win_num</span><span class="p">))</span>
+        <span class="c1"># Внутри service бесконечный цикл, который прерывается,</span>
+        <span class="c1"># когда окошко закрывается на перерыв.</span>
+        <span class="c1"># Это приводит к новой итерации цикла for =&gt;</span>
+        <span class="c1"># позже окошко откроется по расписанию в момент времени ts</span>
+
+
+<span class="k">def</span> <span class="nf">service</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">,</span>
+            <span class="n">clients</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Store</span><span class="p">,</span>
+            <span class="n">when_close</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">win_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Процесс обслуживания клиентов до тех пор,</span>
+<span class="sd">    пока окошко не закроется на перерыв в момент времени</span>
+<span class="sd">    `when_close` или после обслуживания последнего клиента,</span>
+<span class="sd">    вышедшего за рамки данного времени.</span>
+
+<span class="sd">    * env: экземпляр среды SimPy</span>
+<span class="sd">    * clients: очередь клиентов (разделяемый ресурс)</span>
+<span class="sd">    * when_close: когда окошку закрываться на перерыв</span>
+<span class="sd">    * win_num: номер обслуживающего окошка</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Запрос на получение ресурса</span>
+        <span class="k">with</span> <span class="n">clients</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">as</span> <span class="n">client_req</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">when_close</span> <span class="o">-</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span>
+            <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Условие закрытия окна</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Окно #</span><span class="si">{</span><span class="n">win_num</span><span class="si">}</span><span class="s2"> ЗАКРЫЛОСЬ&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="c1"># Ожидаем либо получения ресурса (клиента),</span>
+            <span class="c1"># либо наступления перерыва</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">client_req</span> <span class="o">|</span> <span class="n">close</span>
+            <span class="c1"># В event хранится словарь {событие: значение_события}</span>
+
+            <span class="c1"># Если получили доступ к ресурсу:</span>
+            <span class="k">if</span> <span class="n">client_req</span> <span class="ow">in</span> <span class="n">event</span><span class="p">:</span>
+                <span class="c1"># - достаём соответствующий экземпляр клиента</span>
+                <span class="n">client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client_req</span><span class="o">.</span><span class="n">value</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Окно #</span><span class="si">{</span><span class="n">win_num</span><span class="si">}</span><span class="s2"> ЗАНЯТО &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Клиентом #</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+                <span class="c1"># - ожидаем, пока клиент обслуживается</span>
+                <span class="k">yield</span> <span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Окно #</span><span class="si">{</span><span class="n">win_num</span><span class="si">}</span><span class="s2"> СВОБОДНО&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># - ещё одно условие закрытия окна</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Окно #</span><span class="si">{</span><span class="n">win_num</span><span class="si">}</span><span class="s2"> ЗАКРЫЛОСЬ&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+
+<span class="c1"># Затравка для воспроизведения случайных чисел</span>
+<span class="n">rand</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="c1"># Инициализируем среду SimPy с указанием начального времени</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span><span class="n">initial_time</span><span class="o">=</span><span class="mf">8.5</span><span class="p">)</span>
+<span class="c1"># Назначаем расписание работы трёх окон</span>
+<span class="n">windows_work_time</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">11.5</span><span class="p">,</span> <span class="mf">13.5</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">9.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">10.5</span><span class="p">,</span> <span class="mf">12.5</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">11.5</span><span class="p">,</span> <span class="mf">14.5</span><span class="p">)]</span>
+<span class="p">]</span>
+
+<span class="c1"># Инициализируем разделяемый ресурс - очередь клиентов</span>
+<span class="n">clients</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="c1"># Запускаем процесс прихода клиентов</span>
+<span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
+    <span class="n">clients_arriving</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">clients</span><span class="p">,</span> <span class="n">mean_arrival</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="c1"># Запускаем три процесса работы окон.</span>
+<span class="c1"># Каждое окно со своим расписанием работы timed_agenda</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">timed_agenda</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">windows_work_time</span><span class="p">):</span>
+    <span class="c1"># Обратите внимание, что одну и ту же функцию, но с разными</span>
+    <span class="c1"># аргументами, мы используем, чтобы создать</span>
+    <span class="c1"># три различных процесса (для каждого окна)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">window</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">timed_agenda</span><span class="p">,</span> <span class="n">clients</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># Запускаем симуляцию</span>
+<span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mf">13.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>8.5000: Окно #1 ОТКРЫЛОСЬ
+8.5000: Окно #2 ОТКРЫЛОСЬ
+8.8400: Клиент #1 ПРИШЁЛ
+8.8400: Окно #1 ЗАНЯТО Клиентом #1
+8.8604: Окно #1 СВОБОДНО
+8.9472: Клиент #2 ПРИШЁЛ
+8.9472: Окно #2 ЗАНЯТО Клиентом #2
+8.9974: Окно #2 СВОБОДНО
+9.3918: Клиент #3 ПРИШЁЛ
+9.3918: Окно #1 ЗАНЯТО Клиентом #3
+9.5000: Окно #2 ЗАКРЫЛОСЬ
+9.5099: Окно #1 СВОБОДНО
+10.1342: Клиент #4 ПРИШЁЛ
+10.1342: Окно #1 ЗАНЯТО Клиентом #4
+10.1639: Окно #1 СВОБОДНО
+10.3169: Клиент #5 ПРИШЁЛ
+10.3169: Окно #1 ЗАНЯТО Клиентом #5
+10.3380: Окно #1 СВОБОДНО
+10.3991: Клиент #6 ПРИШЁЛ
+10.3991: Окно #1 ЗАНЯТО Клиентом #6
+10.4081: Клиент #7 ПРИШЁЛ
+10.4916: Окно #1 СВОБОДНО
+10.4916: Окно #1 ЗАНЯТО Клиентом #7
+10.5000: Окно #2 ОТКРЫЛОСЬ
+10.5381: Окно #1 СВОБОДНО
+10.5381: Окно #1 ЗАКРЫЛОСЬ
+10.7579: Клиент #8 ПРИШЁЛ
+10.7579: Окно #2 ЗАНЯТО Клиентом #8
+10.8409: Клиент #9 ПРИШЁЛ
+10.8563: Окно #2 СВОБОДНО
+10.8563: Окно #2 ЗАНЯТО Клиентом #9
+10.9614: Окно #2 СВОБОДНО
+11.3935: Клиент #10 ПРИШЁЛ
+11.3935: Окно #2 ЗАНЯТО Клиентом #10
+11.4111: Окно #2 СВОБОДНО
+11.5000: Окно #3 ОТКРЫЛОСЬ
+11.5000: Окно #1 ОТКРЫЛОСЬ
+11.9398: Клиент #11 ПРИШЁЛ
+11.9398: Окно #2 ЗАНЯТО Клиентом #11
+12.0612: Окно #2 СВОБОДНО
+12.0784: Клиент #12 ПРИШЁЛ
+12.0784: Окно #3 ЗАНЯТО Клиентом #12
+12.1184: Окно #3 СВОБОДНО
+12.5000: Окно #2 ЗАКРЫЛОСЬ
+13.1290: Клиент #13 ПРИШЁЛ
+13.1290: Окно #1 ЗАНЯТО Клиентом #13
+13.1614: Клиент #14 ПРИШЁЛ
+13.1614: Окно #3 ЗАНЯТО Клиентом #14
+13.1926: Окно #3 СВОБОДНО
+13.1961: Окно #1 СВОБОДНО
+</pre></div>
+</div>
+</div>
+</div>
+<p>Итак, большая часть кода вам уже, наверняка, понятна.
+Рассмотрим основную особенность — наличие разделяемого ресурса <code class="docutils literal notranslate"><span class="pre">clients</span> <span class="pre">=</span> <span class="pre">sim.Store(env)</span></code>.</p>
+<p>Всего в SimPy есть три вида ресурсов:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://simpy.readthedocs.io/en/latest/topical_guides/resources.html#res-type-resource"><code class="docutils literal notranslate"><span class="pre">Resource</span></code></a> — по сути своей это классический <a class="reference external" href="https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D1%84%D0%BE%D1%80_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)">семафор</a>. Ресурсы могут использоваться ограниченным числом процессов одновременно (например, заправочная станция с ограниченным числом топливных насосов). Процессы запрашивают (<code class="docutils literal notranslate"><span class="pre">Resource.request()</span></code>) эти ресурсы, чтобы стать пользователем (“владеть” ими) и должны освободить их (<code class="docutils literal notranslate"><span class="pre">Resource.release()</span></code>), как только они закончатся (например, транспортные средства прибывают на заправочную станцию, используют топливный насос, если он доступен, и уезжают, как заправятся).</p></li>
+<li><p><a class="reference external" href="https://simpy.readthedocs.io/en/latest/topical_guides/resources.html#res-type-container"><code class="docutils literal notranslate"><span class="pre">Container</span></code></a> — хранят в себе количество чего-либо однородного (объём бензина в цистерне заправки, например, или количество грибов в корзине).</p></li>
+<li><p><a class="reference external" href="https://simpy.readthedocs.io/en/latest/topical_guides/resources.html#stores"><code class="docutils literal notranslate"><span class="pre">Store</span></code></a> — “магазин” близок к контейнеру, но может хранить разнородные объекты, как настоящий магазин, в котором можно купить и фрукты, и овощи и прочие продукты.\</p></li>
+</ol>
+<p>У <code class="docutils literal notranslate"><span class="pre">Store</span></code> и <code class="docutils literal notranslate"><span class="pre">Container</span></code> нет методов <code class="docutils literal notranslate"><span class="pre">request()</span></code> и <code class="docutils literal notranslate"><span class="pre">release()</span></code>, как у <code class="docutils literal notranslate"><span class="pre">Resource</span></code>.
+Вместо них методы добавления в очередь <code class="docutils literal notranslate"><span class="pre">put(item)</span></code> и получения следующего объекта в очереди <code class="docutils literal notranslate"><span class="pre">get()</span></code>.</p>
+<p>В нашей задаче разделяемым ресурсом является очередь клиентов <code class="docutils literal notranslate"><span class="pre">clients</span></code>.
+Этот ресурс используется в двух процессах: <code class="docutils literal notranslate"><span class="pre">clients_arriving</span></code> и <code class="docutils literal notranslate"><span class="pre">service</span></code>.
+В <code class="docutils literal notranslate"><span class="pre">clients_arriving</span></code> в очередь добавляется (<code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">clients.put(client)</span></code>) новый клиент, а в <code class="docutils literal notranslate"><span class="pre">service</span></code> — окно запрашивает ресурс через менеджер контекста <code class="docutils literal notranslate"><span class="pre">with</span></code>: <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">clients.get()</span> <span class="pre">as</span> <span class="pre">client_req</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Использование менеджера контекста при запросе любого ресурса в SimPy является хорошим и надёжным подходом, поскольку после захвата ресурса <strong>крайне важно ресурс освобождать</strong>.
+Менеджер контекста берёт эту работу на себя.
+Вручную же делать это неудобно по ряду причин, которые станут вам понятны в процессе накопления опыта моделирования с использованием SimPy.
+Коротко говоря, возможно такое, что у вас наступит другое событие вместо события получения ресурса.
+Если вы явно не освободите ресурс, то он будет потерян для всех остальных процессов.</p>
+</div>
+<p>Важным нововведением является использование <em>условного события</em> <code class="docutils literal notranslate"><span class="pre">event</span> <span class="pre">=</span> <span class="pre">yield</span> <span class="pre">client_req</span> <span class="pre">|</span> <span class="pre">close</span></code>.
+По условию задачи каждое окно работает по своему расписанию.
+Следовательно, каждое свободное работающее окно ждёт одно событие из двух: либо до закрытия окна придёт клиент, либо наступит время перерыва.
+Именно это и означает запись <code class="docutils literal notranslate"><span class="pre">event</span> <span class="pre">=</span> <span class="pre">yield</span> <span class="pre">client_req</span> <span class="pre">|</span> <span class="pre">close</span></code> (обратите внимание на наличие <code class="docutils literal notranslate"><span class="pre">yield</span></code>).
+В первом случае окно получает клиента и должно его обслужить в течение времени <code class="docutils literal notranslate"><span class="pre">duration</span></code> этого клиента.
+Во втором случае окно закрывается на перерыв.</p>
+<p>Условие <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">client_req</span> <span class="pre">in</span> <span class="pre">event</span></code> записывается именно так потому, что <code class="docutils literal notranslate"><span class="pre">event</span></code> представляет собой обычный Python-словарь.
+Ключами являются наступившие события, а значениями — значения (<code class="docutils literal notranslate"><span class="pre">value</span></code>) этих событий.
+Если среди ключей есть <code class="docutils literal notranslate"><span class="pre">client_req</span></code> (то есть в очереди есть хотя бы один клиент), то он забирается из очереди и обслуживается.
+В ином случае наступило событие <code class="docutils literal notranslate"><span class="pre">close</span></code> — окно закрывается на перерыв.
+Это выражается в завершении генераторной функции <code class="docutils literal notranslate"><span class="pre">service</span></code> оператором <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p>
+<p>Результат работы программы вы можете видеть под исходным кодом.
+Убедитесь в правильности вывода.
+Подобную модель можно использовать для решения довольно интересных оптимизационных задач.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="processes_interaction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Взаимодействие между процессами</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="bank.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Обслуживание клиентов банка</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Программная реализация</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
