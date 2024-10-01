@@ -380,7 +380,14 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Программная реализация</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Программная реализация</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Класс клиента</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Класс работника</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Взаимодействие работников и клиентов</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Моделирование</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Заключение</a></li>
 </ul>
             </nav>
         </div>
@@ -394,37 +401,60 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>Обслуживание клиентов банка<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<p>Рассмотрим процесс обслуживания клиентов банка в одном из его офисов.
-Пусть есть <span class="math notranslate nohighlight">\(m\)</span> сотрудников, готовых обслуживать клиентов, и <span class="math notranslate nohighlight">\(n\)</span> терминалов самообслуживания.</p>
-<p>Каждый <span class="math notranslate nohighlight">\(j\)</span>-ый сотрудник, <span class="math notranslate nohighlight">\(j=1,2,\ldots,m\)</span>, имеет собственное заданное время работы: от <span class="math notranslate nohighlight">\(t_{\text{s} j}\)</span> до <span class="math notranslate nohighlight">\(t_{\text{e} j}\)</span>.
-При этом, если работник обслуживает клиента, то завершает работу он только после того, как обслужит этого клиента.
-Терминалы работают постоянно.</p>
-<p>Клиенты приходят в банк в случайные моменты времени с момента открытия банка и вплоть до его закрытия. Пусть появление клиентов подчиняется экспоненциальному распределению:</p>
+<p>Рассмотрим процесс обслуживания клиентов банка в одном из его офисов.</p>
+<p>Пусть есть несколько сотрудников.
+Каждый сотрудник имеет собственное расписание работы (по аналогии с почтовыми окнами из раздела <a class="reference internal" href="post.html"><span class="doc">Моделирование почтового отделения</span></a>).
+При этом, если работник обслуживает клиента, то завершает работу он только после обслуживания.</p>
+<p>Клиенты приходят в банк в случайные моменты времени с момента открытия банка и вплоть до его закрытия.
+Пусть появление клиентов подчиняется экспоненциальному распределению:</p>
 <div class="math notranslate nohighlight">
 \[
-t_\text{client} \sim \frac{1}{\tau} \exp\left( -\frac{t}{\tau} \right),
+t_\text{a} \sim \frac{1}{\tau_\text{a}} \exp\left( -\frac{t}{\tau_\text{a}} \right),
 \]</div>
-<p>где <span class="math notranslate nohighlight">\(\tau\)</span> — среднее время, через которое приходит новый клиент.</p>
-<p>Допустим, что каждый <span class="math notranslate nohighlight">\(i\)</span>-ый клиент имеет определённое терпение: он готов ждать некоторое время <span class="math notranslate nohighlight">\(t_{\text{w} i}\)</span>.
+<p>где <span class="math notranslate nohighlight">\(\tau_\text{a}\)</span> — среднее время, через которое приходит новый клиент.</p>
+<p>Допустим, что каждый клиент имеет определённое терпение: он готов ждать некоторое время <span class="math notranslate nohighlight">\(t_\text{w}\)</span>.
+Пусть оно распределено по экспоненциальному закону со средним <span class="math notranslate nohighlight">\(\tau_\text{w}\)</span>.
 Пусть это будет экспоненциально распределённая случайная величина со средним временем <span class="math notranslate nohighlight">\(\tau_\text{w}\)</span>.
-Если клиент в течение времени <span class="math notranslate nohighlight">\(t_{\text{w} i}\)</span> не обслуживается, он уходит, разочаровывается в банке и отказывается от его услуг.
-Клиент обслуживается в течение экспоненциально распределённого времени <span class="math notranslate nohighlight">\(t_{\text{sc} i}\)</span> со средним <span class="math notranslate nohighlight">\(\tau_\text{sc}\)</span>.</p>
+Если клиент в течение времени <span class="math notranslate nohighlight">\(t_\text{w}\)</span> не обслуживается, он уходит, разочаровывается в банке и отказывается от его услуг.
+В ином случае клиент обслуживается в течение экспоненциально распределённого времени <span class="math notranslate nohighlight">\(t_{\text{sc} i}\)</span> со средним <span class="math notranslate nohighlight">\(\tau_\text{sc}\)</span>.</p>
 <p><strong>Требуется</strong> промоделировать описанную систему в течении заданного времени <span class="math notranslate nohighlight">\(T\)</span>.
 В качестве результата может быть интересно получить статистику потерянных клиентов, среднее время ожидания клиентов и его распределение и т.п.
 Модель, которую мы сформируем можно использовать для решения разнообразных оптимизационных задач.
-Например, оптимизировать расписание работы сотрудников, количество терминалов и работников и т.д.</p>
-<p>Компьютерную модель создадим с использованием библиотеки для дискретно-событийного моделирования <a class="reference external" href="https://simpy.readthedocs.io/en/latest/">SimPy</a>.</p>
+Например, оптимизировать расписание работы сотрудников, количество работников и т.д.</p>
 <section id="id2">
 <h2>Программная реализация<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
-<p>Прежде чем переходить к пояснениям приведённого ниже кода, проанализируйте его, постарайтесь понять.</p>
+<p>По сравнению со всеми предыдущими задачами текущая является наиболее сложной.
+Полный код программы представлен ниже.</p>
+<p>Подключим ряд библиотек:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rand</span>
 <span class="kn">import</span> <span class="nn">simpy</span> <span class="k">as</span> <span class="nn">sim</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id3">
+<h3>Класс клиента<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>Создадим класс клиента, соответствующий требованиям задачи:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Описывает клиента.</span>
 
+<span class="sd">    # Поля</span>
 
-<span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+<span class="sd">    * av_wait_time: среднее время ожидания (терпение)</span>
+<span class="sd">    * av_service_time: среднее время обслуживания</span>
+<span class="sd">    * env: экземпляр среды SimPy</span>
+<span class="sd">    * cid: индивидуальный номер</span>
+<span class="sd">    * arrive_time: время прихода</span>
+<span class="sd">    * satisfied: удовлетворён ли клиент</span>
+<span class="sd">    * waiting_time: итоговое время ожидания</span>
+<span class="sd">    * total_time: общее время, проведённое в банке</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="n">av_wait_time</span> <span class="o">=</span> <span class="mi">15</span><span class="o">/</span><span class="mi">60</span>
     <span class="n">av_service_time</span> <span class="o">=</span> <span class="mi">10</span><span class="o">/</span><span class="mi">60</span>
 
@@ -438,38 +468,72 @@ t_\text{client} \sim \frac{1}{\tau} \exp\left( -\frac{t}{\tau} \right),
         <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
     
     <span class="k">def</span> <span class="nf">get_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workers</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Store</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Процесс ожидания обслуживания кем-либо из работников `workers`.</span>
+
+<span class="sd">        * workers: разделяемый ресурс - работающие сотрудники банка</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Запрашиваем ресурс</span>
         <span class="k">with</span> <span class="n">workers</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">as</span> <span class="n">worker_req</span><span class="p">:</span>
             <span class="n">dt_patience</span> <span class="o">=</span> <span class="n">rand</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">av_wait_time</span><span class="p">)</span>
             <span class="n">patience</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">dt_patience</span><span class="p">)</span>
+            <span class="c1"># Ожидаем либо освобождения сотрудника, либо конца терпения</span>
             <span class="n">worker_or_patience</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">worker_req</span> <span class="o">|</span> <span class="n">patience</span>
 
+            <span class="c1"># Запоминаем итоговое время ожидания</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">waiting_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">arrive_time</span>
 
+            <span class="c1"># Если нашёлся свободный сотрудник:</span>
             <span class="k">if</span> <span class="n">worker_req</span> <span class="ow">in</span> <span class="n">worker_or_patience</span><span class="p">:</span>
+                <span class="c1"># - достаём экземпляр работника</span>
                 <span class="n">worker</span> <span class="o">=</span> <span class="n">worker_req</span><span class="o">.</span><span class="n">value</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;Worker #</span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">wid</span><span class="si">}</span><span class="s2"> STARTS service &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;the Client #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
-            
+
+                <span class="c1"># - клиент ожидает завершения процесса своего обслуживания</span>
                 <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">service</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-                
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;Worker #</span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">wid</span><span class="si">}</span><span class="s2"> ENDS service &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;the Client #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
-
+                <span class="c1"># - клиент удовлетворён</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">satisfied</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># - запоминаем общее время, которое клиент провёл в банке</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">total_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">arrive_time</span>
+            <span class="c1"># Иначе:</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># - необслуженный клиент уходит из банка</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Client #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2"> is GONE&quot;</span>
                 <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Данный код не содержит в себе ничего нового по сравнению с кодом из предыдущего раздела <a class="reference internal" href="post.html"><span class="doc">Моделирование почтового отделения</span></a>.</p>
+</section>
+<section id="id4">
+<h3>Класс работника<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p>Также опишем класс сотрудника банка:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Worker</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Описывает банковского работника.</span>
 
+<span class="sd">    # Поля</span>
 
-<span class="k">class</span> <span class="nc">Worker</span><span class="p">:</span>
+<span class="sd">    * env: SimPy-среда</span>
+<span class="sd">    * wid: индивидуальный номер работника</span>
+<span class="sd">    * timed_agenda: расписание работы</span>
+<span class="sd">    * when_end: когда ближайший перерыв</span>
+<span class="sd">    * clients: список обслуженных клиентов</span>
+<span class="sd">    * start_event: событие &quot;сотрудник приступил к работе&quot;</span>
+<span class="sd">    * get_free_event: событие &quot;сотрудник освободился&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">env</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">,</span>
                  <span class="n">wid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -480,68 +544,147 @@ t_\text{client} \sim \frac{1}{\tau} \exp\left( -\frac{t}{\tau} \right),
 
         <span class="bp">self</span><span class="o">.</span><span class="n">when_end</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clients</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Инициализируем элементарные события sim.Event().</span>
+        <span class="c1"># Их смысл раскрывается в процессах work, service и</span>
+        <span class="c1"># в процессах банка _add_workers и _free_workers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_event</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_free_event</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
     
     <span class="k">def</span> <span class="nf">work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Процесс работы сотрудника.</span>
+
+<span class="sd">        Отвечает за работу по расписанию.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Код аналогичен коду работы почтовых окон</span>
+        <span class="c1"># из предыдущего раздела</span>
         <span class="k">for</span> <span class="n">ts</span><span class="p">,</span> <span class="n">te</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">timed_agenda</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">when_end</span> <span class="o">=</span> <span class="n">te</span>
+            
+            <span class="c1"># Ожидаем начала работы</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">ts</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Worker #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wid</span><span class="si">}</span><span class="s2"> WORKS&quot;</span>
             <span class="p">)</span>
 
+            <span class="c1"># Особенность: активируем событие &quot;сотрудник начал работу&quot;,</span>
+            <span class="c1"># причём в качестве параметра succeed передаём</span>
+            <span class="c1"># текущий экземпляр self, что позволяет процессам</span>
+            <span class="c1"># обмениваться данными - переданный экземпляр является</span>
+            <span class="c1"># возвращаемым значением при наступлении события</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_event</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="c1"># И сразу создаём новое событие,</span>
+            <span class="c1"># ведь работник может уйти на перерыв, после которого</span>
+            <span class="c1"># снова возобновит работу</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Процесс обслуживания клиента `client`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">rand</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">client</span><span class="o">.</span><span class="n">av_service_time</span><span class="p">)</span>
+
+        <span class="c1"># Обслуживаем клиента</span>
         <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="c1"># Добавляем в собственный список обслуженных клиентов</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_end</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_end</span><span class="p">:</span>
+            <span class="c1"># Работник продолжает работать,</span>
+            <span class="c1"># активируя событие &quot;сотрудник освободился&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_free_event</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_free_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">event</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Работник уходит на перерыв</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Worker #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wid</span><span class="si">}</span><span class="s2"> RELAXES&quot;</span>
             <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>После того, как событие активировано с помощью <code class="docutils literal notranslate"><span class="pre">succeed</span></code>, оно не может быть активировано повторно: попытка этого приведёт к возникновению исключения.
+Приходится инициализировать событие заново с помощью <code class="docutils literal notranslate"><span class="pre">env.event()</span></code>.</p>
+</div>
+</section>
+<section id="id5">
+<h3>Взаимодействие работников и клиентов<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>Взаимодействие между клиентами и работниками организуем посредством банка:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Bank</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Описывает банк, в котором работают сотрудники</span>
+<span class="sd">    и в который приходят клиенты.</span>
 
+<span class="sd">    # Поля</span>
 
-<span class="k">class</span> <span class="nc">Bank</span><span class="p">:</span>
+<span class="sd">    * av_incoming_time: среднее  время между приходом клиентов</span>
+<span class="sd">    * env: SimPy-среда</span>
+<span class="sd">    * workers_list: простой список сотрудников</span>
+<span class="sd">    * workers: разделяемый ресурс - работающие сотрудники</span>
+<span class="sd">    * clients: список всех клиентов (обслуженных и нет) банка</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">av_incoming_time</span> <span class="o">=</span> <span class="mi">6</span><span class="o">/</span><span class="mi">60</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">,</span> <span class="n">workers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Worker</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">workers_list</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Ёмкость ресурса ограничена числом работников.</span>
+        <span class="c1"># Ресурс изначально пуст.</span>
+        <span class="c1"># Работники будут добавляться при начале работы</span>
+        <span class="c1"># по своему расписанию</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workers</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">workers</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Client</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">operate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Основной процесс функционирования банка.</span>
+
+<span class="sd">        Банк запускает процессы работы своих сотрудников,</span>
+<span class="sd">        а также процессы управления сотрудниками</span>
+<span class="sd">        и процесс генерации новых клиентов.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Запускаем процессы работы всех сотрудников</span>
         <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">work</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_workers</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">free_workers</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients_incoming</span><span class="p">())</span>
+        <span class="c1"># Запускаем процессы управления работниками</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_workers</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_free_workers</span><span class="p">())</span>
+        <span class="c1"># Запускаем процесс генерации новых клиентов</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clients_incoming</span><span class="p">())</span>
     
-    <span class="k">def</span> <span class="nf">add_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Процесс, добавляющий работников в ресурс workers</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># Формируем список событий по всем работникам</span>
             <span class="n">starts</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">.</span><span class="n">start_event</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers_list</span><span class="p">]</span>
+            <span class="c1"># Ожидаем наступления хотя бы одного события</span>
             <span class="n">any_of</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">any_of</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span>
+            <span class="c1"># any_of есть обычный Python-словарь {событие: значение}</span>
             <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">any_of</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="c1"># Добавляем сотрудников, начавших работать,</span>
+                <span class="c1"># в очередь (ресурс) свободных сотрудников workers</span>
                 <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">worker</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">free_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_free_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Процесс, добавляющий работников,</span>
+        <span class="c1"># обслуживших очередного клиента,</span>
+        <span class="c1"># в ресурс свободных сотрудников workers</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># Код аналогичен _add_workers,</span>
+            <span class="c1"># только событие другое (get_free_event)</span>
             <span class="n">ends</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">.</span><span class="n">get_free_event</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers_list</span><span class="p">]</span>
             <span class="n">any_of</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">any_of</span><span class="p">(</span><span class="n">ends</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">any_of</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">worker</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">clients_incoming</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_clients_incoming</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Процесс, генерирующий новых клиентов</span>
         <span class="n">num</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># Ожидаем события &quot;пришёл новый клиент&quot;</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span>
                 <span class="n">rand</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">av_incoming_time</span><span class="p">)</span>
             <span class="p">)</span>
@@ -550,84 +693,116 @@ t_\text{client} \sim \frac{1}{\tau} \exp\left( -\frac{t}{\tau} \right),
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: Client #</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">cid</span><span class="si">}</span><span class="s2"> ARRIVES&quot;</span>
             <span class="p">)</span>
 
+            <span class="c1"># Запускаем процесс клиента по ожиданию сотрудника</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
                 <span class="n">client</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="p">)</span>
             <span class="p">)</span>
 
+            <span class="c1"># Добавляем клиента в список всех клиентов банка</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
             <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
 
+    <span class="c1"># Далее идёт блок обычных методов класса,</span>
+    <span class="c1"># предназначенных для получения той или иной</span>
+    <span class="c1"># информации по результатам моделирования банка</span>
     <span class="k">def</span> <span class="nf">get_number_of_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Общее число клиентов, посетивших банк.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">get_number_of_satisfied_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково количество довольных клиентов?&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково количество довольных клиентов?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">satisfied</span><span class="p">])</span>
     
     <span class="k">def</span> <span class="nf">get_number_of_unsatisfied_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково количество недовольных клиентов?&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково количество недовольных клиентов?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_satisfied_clients</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">get_average_waiting_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково среднее время ожидания по всем клиентам?&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково среднее время ожидания по всем клиентам?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">waiting_time</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">get_average_total_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково среднее время нахождения удовлетворённых клиентов в банке?&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Каково среднее время нахождения удовлетворённых клиентов в банке?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">satisfied</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">total_time</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">satisfied</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">satisfied</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">satisfied</span><span class="p">)</span> <span class="k">if</span> <span class="n">satisfied</span> <span class="k">else</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Условное событие <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">env.any_of(...)</span></code> полностью совпадает с ранее использовавшейся записью <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">event1</span> <span class="pre">|</span> <span class="pre">event2</span></code>, только способно учитывать произвольное число ожидаемых событий.</p>
+<p>Каждое событие из списка <code class="docutils literal notranslate"><span class="pre">starts</span></code> в процессе <code class="docutils literal notranslate"><span class="pre">_add_workers</span></code> наступает после того, как оно будет активировано.
+В данном случае, событие <code class="docutils literal notranslate"><span class="pre">w.start_event</span></code> активируется (<code class="docutils literal notranslate"><span class="pre">start_event.succeed(self)</span></code>) в процессе <code class="docutils literal notranslate"><span class="pre">work</span></code> работника.
+Так как в <code class="docutils literal notranslate"><span class="pre">succeed</span></code> был передан <code class="docutils literal notranslate"><span class="pre">self</span></code> (экземпляр работника), то это самый экземпляр станет значением наступившего события.
+Это обеспечивает возможность получения экземпляра работника в цикле <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">worker</span> <span class="pre">in</span> <span class="pre">any_of.values()</span></code>.</p>
+<p>Полностью аналогичен процесс <code class="docutils literal notranslate"><span class="pre">_free_workers</span></code>, только работает он с событиями <code class="docutils literal notranslate"><span class="pre">Worker.get_free_event</span></code>, которые активируются в процессе <code class="docutils literal notranslate"><span class="pre">Worker.service</span></code>.</p>
+</section>
+<section id="id6">
+<h3>Моделирование<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>Запустим симуляцию, посмотрим на результат:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Глобальная область</span>
+<span class="c1"># - настраиваем логирование</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;bank.log&quot;</span><span class="p">,</span> <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span>
+<span class="p">)</span>
+<span class="c1"># - задаём затравку для генератора псевдослучайных чисел</span>
+<span class="n">rand</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="c1"># - инициализируем среду SimPy</span>
+<span class="n">initial_time</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span><span class="n">initial_time</span><span class="p">)</span>
+<span class="c1"># - формируем расписание работы сотрудников</span>
+<span class="c1">#   (длина списка определяет число работников: 2 в данном случае)</span>
+<span class="n">timed_agenda</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[(</span><span class="n">initial_time</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mf">2.5</span><span class="p">),</span> <span class="p">(</span><span class="n">initial_time</span><span class="o">+</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mi">5</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="n">initial_time</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mf">3.5</span><span class="p">),</span> <span class="p">(</span><span class="n">initial_time</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mi">6</span><span class="p">)]</span>
+<span class="p">]</span>
+<span class="c1"># - создаём список работников</span>
+<span class="n">workers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Worker</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ta</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">timed_agenda</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="c1"># - создаём банк</span>
+<span class="n">bank</span> <span class="o">=</span> <span class="n">Bank</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">workers</span><span class="p">)</span>
+<span class="c1"># - запускаем его основной процесс</span>
+<span class="c1">#   (но моделирование ещё не запущено)</span>
+<span class="n">bank</span><span class="o">.</span><span class="n">operate</span><span class="p">()</span>
+<span class="c1"># - запускаем симуляцию до заданного времени</span>
+<span class="n">t_sim</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">initial_time</span> <span class="o">+</span> <span class="n">t_sim</span><span class="p">)</span>
 
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">rand</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
-        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;bank.log&quot;</span><span class="p">,</span> <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span>
-    <span class="p">)</span>
-
-    <span class="n">initial_time</span> <span class="o">=</span> <span class="mi">9</span>
-    <span class="n">env</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span><span class="n">initial_time</span><span class="p">)</span>
-    <span class="n">timed_agenda</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">[(</span><span class="n">initial_time</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mf">2.5</span><span class="p">),</span> <span class="p">(</span><span class="n">initial_time</span><span class="o">+</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mi">5</span><span class="p">)],</span>
-        <span class="p">[(</span><span class="n">initial_time</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mf">3.5</span><span class="p">),</span> <span class="p">(</span><span class="n">initial_time</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">initial_time</span><span class="o">+</span><span class="mi">6</span><span class="p">)]</span>
-    <span class="p">]</span>
-    <span class="n">workers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">Worker</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ta</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">timed_agenda</span><span class="p">)</span>
-    <span class="p">]</span>
-
-    <span class="n">bank</span> <span class="o">=</span> <span class="n">Bank</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">workers</span><span class="p">)</span>
-    <span class="n">bank</span><span class="o">.</span><span class="n">operate</span><span class="p">()</span>
-    
-    <span class="n">t_sim</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">initial_time</span> <span class="o">+</span> <span class="n">t_sim</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Работник #</span><span class="si">{</span><span class="n">w</span><span class="o">.</span><span class="n">wid</span><span class="si">}</span><span class="s2"> обслужил клиентов &quot;</span><span class="p">,</span>
-            <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">cid</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">w</span><span class="o">.</span><span class="n">clients</span><span class="p">]</span>
-        <span class="p">)</span>
-
-    <span class="n">n_clients</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_number_of_clients</span><span class="p">()</span>
-    <span class="n">n_satisfied</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_number_of_satisfied_clients</span><span class="p">()</span>
-    <span class="n">n_unsatisfied</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_number_of_unsatisfied_clients</span><span class="p">()</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Всего клиентов:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n_clients</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Число довольных клиентов:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n_satisfied</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Число недовольных клиентов:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n_unsatisfied</span><span class="p">)</span>
+<span class="c1"># - обрабатываем результаты</span>
+<span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;Доля довольных клиентов, %:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="nb">round</span><span class="p">(</span><span class="n">n_satisfied</span><span class="o">/</span><span class="n">n_clients</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="sa">f</span><span class="s2">&quot;Работник #</span><span class="si">{</span><span class="n">w</span><span class="o">.</span><span class="n">wid</span><span class="si">}</span><span class="s2"> обслужил клиентов &quot;</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">cid</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">w</span><span class="o">.</span><span class="n">clients</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;Среднее время ожидания, мин:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="nb">round</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_average_waiting_time</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;Среднее время в банке довольных клиентов, мин:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="nb">round</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_average_total_time</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Текущее время, ч:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">n_clients</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_number_of_clients</span><span class="p">()</span>
+<span class="n">n_satisfied</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_number_of_satisfied_clients</span><span class="p">()</span>
+<span class="n">n_unsatisfied</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_number_of_unsatisfied_clients</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Всего клиентов:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n_clients</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Число довольных клиентов:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n_satisfied</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Число недовольных клиентов:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">n_unsatisfied</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Доля довольных клиентов, %:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">(</span><span class="n">n_satisfied</span><span class="o">/</span><span class="n">n_clients</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Среднее время ожидания, мин:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_average_waiting_time</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Среднее время в банке довольных клиентов, мин:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="n">bank</span><span class="o">.</span><span class="n">get_average_total_time</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Текущее время, ч:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -645,6 +820,12 @@ t_\text{client} \sim \frac{1}{\tau} \exp\left( -\frac{t}{\tau} \right),
 </div>
 </div>
 </div>
+</section>
+</section>
+<section id="id7">
+<h2>Заключение<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>Как видите, с помощью SimPy возможно моделировать системы, процессы и явления самой разной степени сложности.
+И в целом подход дискретно-событийного моделирования отлично подходит для моделирования разнообразных систем, обеспечивая простоту и понятность программной реализации моделей.</p>
 </section>
 </section>
 
@@ -703,7 +884,14 @@ t_\text{client} \sim \frac{1}{\tau} \exp\left( -\frac{t}{\tau} \right),
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Программная реализация</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Программная реализация</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Класс клиента</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Класс работника</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Взаимодействие работников и клиентов</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Моделирование</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Заключение</a></li>
 </ul>
   </nav></div>
 
